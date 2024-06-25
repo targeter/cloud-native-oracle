@@ -10,6 +10,9 @@ ARG ORACLE_HOME=$ORACLE_BASE/product/###ORACLE_HOME_ARG###
 ###ORACLE_BASE_CONFIG_ARG###
 #ARG ORADATA=/u01/app/oracle/oradata
 ARG DATA=/u02/app/oracle/oradata
+# The RECO argument specifies the path to the RECO (recovery) directory in the Oracle database container.
+# In this case, it is set to /u03/app/oracle, which is a common location for storing recovery-related files in Oracle databases.
+# The /u03 directory is typically used for additional storage space in the container, separate from the main Oracle installation.
 ARG RECO=/u03/app/oracle
 ARG ORACLE_EDITION=###ORACLE_EDITION_ARG###
 ARG ORACLE_SID=###ORACLE_SID_ARG###
@@ -135,12 +138,17 @@ COPY --chown=oracle:oinstall --from=db $ORACLE_BASE $ORACLE_BASE
 USER root
 RUN $DEBUG $SCRIPTS_DIR/$MANAGE_ORACLE -R
 
+RUN mkdir -p ${DATA} ${RECO} ${ORACLE_BASE}/diag 
+# VOLUME ["$DATA"]
+# VOLUME ["$RECO"]
+# VOLUME [ "$ORACLE_BASE/diag" ]
+RUN chown -R oracle:oinstall ${DATA} ${RECO} ${ORACLE_BASE}/diag
+
 USER oracle
 WORKDIR /home/oracle
 
-VOLUME ["$DATA"]
-VOLUME ["$RECO"]
-VOLUME [ "$ORACLE_BASE/diag" ]
+
+
 ###SYSTEMD_VOLUME###
 EXPOSE 1521 5500 8080
 HEALTHCHECK --interval=1m --start-period=5m CMD $SCRIPTS_DIR/$MANAGE_ORACLE -h >/dev/null || exit 1
