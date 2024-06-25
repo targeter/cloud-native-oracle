@@ -1167,7 +1167,7 @@ then runUserScripts "$ORACLE_BASE"/scripts/startup
      else msg="$ORACLE_SID"
      fi
 # TODO: Report the correct open mode
-     logger BA "Database $msg is open and available."
+     logger BA "Database $msg is open and available. -- DATABASE IS READY TO USE!"
 else warn "Database setup for $ORACLE_SID was unsuccessful."
      warn "Check log output for additional information."
 fi
